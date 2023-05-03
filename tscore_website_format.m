@@ -4,10 +4,10 @@ close all;
 
 % load the data (if needed)
 %subject_pre_post_generate
-
-%% format the write the data in the correct format 
 load('subject_pre_post');
 
+%% format the write the data in the correct format 
+save_data = 'off';
 subject_pre_all = [];
 subject_post_all = [];
 % format data in table 
@@ -160,7 +160,12 @@ subject_post_all_num.Assmnt = ones(height(subject_post_all_num),1)+1;
 subject_post_all_num.PIN = names_all_post';
 subject_all_num = [subject_pre_all_num; subject_post_all_num];
 subject_all_num = [subject_all_num(:,"PIN") subject_all_num(:,"Assmnt") subject_all_num(:,1:end-2)];
-writetable(subject_all_num,'subject_all_num.csv')
+
+if strcmp(save_data,'on')
+
+    writetable(subject_all_num,'subject_all_num.csv')
+
+end 
 
 % try dividing by survey?
 %survey_all_num_pf = [survey_all_num(:,"PIN") survey_all_num(:,"Assmnt") survey_all_num(:,"PFA11") survey_all_num(:,"PFA23") survey_all_num(:,"PFA4") survey_all_num(:,"PFA21") survey_all_num(:,"PFB1") survey_all_num(:,"PFA53") survey_all_num(:,"PFA53")]
