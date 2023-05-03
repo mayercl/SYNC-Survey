@@ -24,12 +24,13 @@ for j = 1:length(subject)
         subject_datenums = datenum(datetime(subject_formatted_time,'convertfrom','posixtime'));
         ind_repeat = find(diff(subject_datenums) < 1); % first indices of a repeat
         ind_repeat_second = ind_repeat+1; % second index of repeat
-
+        
+        % deal with daily surveys that occur close together in time
         for i = 1:length(ind_repeat)
             
             if subject_formatted_fatigue(ind_repeat(i)) == subject_formatted_fatigue(ind_repeat_second(i))
                 
-                ind_delete = [ind_delete; ind_repeat_second(i)];
+                ind_delete = [ind_delete; ind_repeat_second(i)]; % delete second index of repeat
                 count_del = count_del+1;
 
             else
@@ -51,8 +52,14 @@ for j = 1:length(subject)
 
 end 
 
-save('subject','subject');
+% save the results
+if strcmp(save_data, 'on')
 
+    save('subject','subject');
+
+end 
+
+% format daily fatigue surveys
 function subject_formatted_fatigue = daily_fatigue_format(subject_formatted_fatigue_text)
 
    subject_formatted_fatigue = nan(length(subject_formatted_fatigue_text),1);
