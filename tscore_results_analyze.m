@@ -2,7 +2,10 @@ clear; clc;
 close all;
 
 %% load the data
+figure_display = 'off';
 filepath = 'tscores_surveys/';
+
+% load the PROMIS tables from HealthMeasures website 
 anxiety_table = readtable([filepath 'anxiety_v1.csv'],NumHeaderLines = 4);
 depression_table = readtable([filepath 'depression_v1.csv'],NumHeaderLines = 4);
 global_health_table = readtable([filepath 'global_health_v1.csv'],NumHeaderLines = 4);
@@ -18,11 +21,13 @@ for j = 1:length(subject)
     subject_con_int(j) = subject(j).exp_con;
 
 end 
+
 % restrict to individuals with a pre and post survey
 pre_pins = unique(anxiety_table.PIN(anxiety_table.Assmnt == 1));
 post_pins = unique(anxiety_table.PIN(anxiety_table.Assmnt == 2));
 pins_both = intersect(pre_pins, post_pins);
 
+% iterate through individuals with a pre and post survey
 for j = 1:length(pins_both)
 
     individual_pin = pins_both{j};
@@ -66,228 +71,231 @@ for j = 1:length(pins_both)
 end 
 
 %% visualize the data
-figure()
-set(gcf, 'Position',  [100, 100, 1000, 400])
-set(gcf,'color','w');
-set(gca,'Visible','off')
-set(0,'DefaultAxesTitleFontWeight','normal');
-subplot(2,3,1)
-y = [mean(anx_tscore_pre(tscore_con_int == 1)), mean(anx_tscore_pre(tscore_con_int == 0)),mean(anx_tscore_post(tscore_con_int == 1)), mean(anx_tscore_post(tscore_con_int == 0))];
-bar(y,'k')
-box off 
-ylim([min(y) - 10, max(y)+5])
-xticklabels({'Intervention, pre','Control, pre', 'Intervention, post','Control, post'})
-ylabel('Tscore')
-title('Anxiety','FontSize',16)
+if strcmp(figure_display,'on')
 
-subplot(2,3,2)
-y = [mean(dep_tscore_pre(tscore_con_int == 1)), mean(dep_tscore_pre(tscore_con_int == 0)),mean(dep_tscore_post(tscore_con_int == 1)), mean(dep_tscore_post(tscore_con_int == 0))];
-bar(y,'k')
-box off 
-ylim([min(y) - 10, max(y)+5])
-xticklabels({'Intervention, pre','Control, pre', 'Intervention, post','Control, post'})
-ylabel('Tscore')
-title('Depression','FontSize',16)
-
-subplot(2,3,3)
-y = [mean(gph_tscore_pre(tscore_con_int == 1)), mean(gph_tscore_pre(tscore_con_int == 0)),mean(gph_tscore_post(tscore_con_int == 1)), mean(gph_tscore_post(tscore_con_int == 0))];
-bar(y,'k')
-box off 
-ylim([min(y) - 10, max(y)+5])
-xticklabels({'Intervention, pre','Control, pre', 'Intervention, post','Control, post'})
-ylabel('Tscore')
-title('Global physical health','FontSize',16)
-
-subplot(2,3,4)
-y = [mean(gmh_tscore_pre(tscore_con_int == 1)), mean(gmh_tscore_pre(tscore_con_int == 0)),mean(gmh_tscore_post(tscore_con_int == 1)), mean(gmh_tscore_post(tscore_con_int == 0))];
-bar(y,'k')
-box off 
-ylim([min(y) - 10, max(y)+5])
-xticklabels({'Intervention, pre','Control, pre', 'Intervention, post','Control, post'})
-ylabel('Tscore')
-title('Global mental health','FontSize',16)
-
-subplot(2,3,5)
-y = [mean(pf_tscore_pre(tscore_con_int == 1)), mean(pf_tscore_pre(tscore_con_int == 0)),mean(pf_tscore_post(tscore_con_int == 1)), mean(pf_tscore_post(tscore_con_int == 0))];
-bar(y,'k')
-box off 
-ylim([min(y) - 10, max(y)+5])
-xticklabels({'Intervention, pre','Control, pre', 'Intervention, post','Control, post'})
-ylabel('Tscore')
-title('Physical function','FontSize',16)
-
-subplot(2,3,6)
-y = [mean(sd_tscore_pre(tscore_con_int == 1)), mean(sd_tscore_pre(tscore_con_int == 0)),mean(sd_tscore_post(tscore_con_int == 1)), mean(sd_tscore_post(tscore_con_int == 0))];
-bar(y,'k')
-box off 
-ylim([min(y) - 10, max(y)+5])
-xticklabels({'Intervention, pre','Control, pre', 'Intervention, post','Control, post'})
-ylabel('Tscore')
-title('Sleep disturbance','FontSize',16)
-
-% more visuals 
-figure()
-set(gcf, 'Position',  [100, 100, 800, 600])
-set(gcf,'color','w');
-set(gca,'Visible','off')
-set(0,'DefaultAxesTitleFontWeight','normal');
-anx_tscore_int_mat = [anx_tscore_pre(tscore_con_int == 1)' anx_tscore_post(tscore_con_int == 1)'];
-anx_tscore_con_mat = [anx_tscore_pre(tscore_con_int == 0)' anx_tscore_post(tscore_con_int == 0)'];
-
-for j = 1:sum(tscore_con_int == 1)
-
-    plot(anx_tscore_int_mat(j,:), 'r')
-    hold on 
+    figure()
+    set(gcf, 'Position',  [100, 100, 1000, 400])
+    set(gcf,'color','w');
+    set(gca,'Visible','off')
+    set(0,'DefaultAxesTitleFontWeight','normal');
+    subplot(2,3,1)
+    y = [mean(anx_tscore_pre(tscore_con_int == 1)), mean(anx_tscore_pre(tscore_con_int == 0)),mean(anx_tscore_post(tscore_con_int == 1)), mean(anx_tscore_post(tscore_con_int == 0))];
+    bar(y,'k')
+    box off 
+    ylim([min(y) - 10, max(y)+5])
+    xticklabels({'Intervention, pre','Control, pre', 'Intervention, post','Control, post'})
+    ylabel('Tscore')
+    title('Anxiety','FontSize',16)
+    
+    subplot(2,3,2)
+    y = [mean(dep_tscore_pre(tscore_con_int == 1)), mean(dep_tscore_pre(tscore_con_int == 0)),mean(dep_tscore_post(tscore_con_int == 1)), mean(dep_tscore_post(tscore_con_int == 0))];
+    bar(y,'k')
+    box off 
+    ylim([min(y) - 10, max(y)+5])
+    xticklabels({'Intervention, pre','Control, pre', 'Intervention, post','Control, post'})
+    ylabel('Tscore')
+    title('Depression','FontSize',16)
+    
+    subplot(2,3,3)
+    y = [mean(gph_tscore_pre(tscore_con_int == 1)), mean(gph_tscore_pre(tscore_con_int == 0)),mean(gph_tscore_post(tscore_con_int == 1)), mean(gph_tscore_post(tscore_con_int == 0))];
+    bar(y,'k')
+    box off 
+    ylim([min(y) - 10, max(y)+5])
+    xticklabels({'Intervention, pre','Control, pre', 'Intervention, post','Control, post'})
+    ylabel('Tscore')
+    title('Global physical health','FontSize',16)
+    
+    subplot(2,3,4)
+    y = [mean(gmh_tscore_pre(tscore_con_int == 1)), mean(gmh_tscore_pre(tscore_con_int == 0)),mean(gmh_tscore_post(tscore_con_int == 1)), mean(gmh_tscore_post(tscore_con_int == 0))];
+    bar(y,'k')
+    box off 
+    ylim([min(y) - 10, max(y)+5])
+    xticklabels({'Intervention, pre','Control, pre', 'Intervention, post','Control, post'})
+    ylabel('Tscore')
+    title('Global mental health','FontSize',16)
+    
+    subplot(2,3,5)
+    y = [mean(pf_tscore_pre(tscore_con_int == 1)), mean(pf_tscore_pre(tscore_con_int == 0)),mean(pf_tscore_post(tscore_con_int == 1)), mean(pf_tscore_post(tscore_con_int == 0))];
+    bar(y,'k')
+    box off 
+    ylim([min(y) - 10, max(y)+5])
+    xticklabels({'Intervention, pre','Control, pre', 'Intervention, post','Control, post'})
+    ylabel('Tscore')
+    title('Physical function','FontSize',16)
+    
+    subplot(2,3,6)
+    y = [mean(sd_tscore_pre(tscore_con_int == 1)), mean(sd_tscore_pre(tscore_con_int == 0)),mean(sd_tscore_post(tscore_con_int == 1)), mean(sd_tscore_post(tscore_con_int == 0))];
+    bar(y,'k')
+    box off 
+    ylim([min(y) - 10, max(y)+5])
+    xticklabels({'Intervention, pre','Control, pre', 'Intervention, post','Control, post'})
+    ylabel('Tscore')
+    title('Sleep disturbance','FontSize',16)
+    
+    % more visuals 
+    figure()
+    set(gcf, 'Position',  [100, 100, 800, 600])
+    set(gcf,'color','w');
+    set(gca,'Visible','off')
+    set(0,'DefaultAxesTitleFontWeight','normal');
+    anx_tscore_int_mat = [anx_tscore_pre(tscore_con_int == 1)' anx_tscore_post(tscore_con_int == 1)'];
+    anx_tscore_con_mat = [anx_tscore_pre(tscore_con_int == 0)' anx_tscore_post(tscore_con_int == 0)'];
+    
+    for j = 1:sum(tscore_con_int == 1)
+    
+        plot(anx_tscore_int_mat(j,:), 'r')
+        hold on 
+    
+    end 
+    for j = 1:sum(tscore_con_int == 0)
+    
+        plot(anx_tscore_con_mat(j,:), 'b')
+        hold on 
+    
+    end 
+    
+    box off 
+    xticks([1,2])
+    xticklabels({'pre','post'})
+    ylabel('Tscore')
+    title('Anxiety','FontSize',16)
+    
+    figure()
+    set(gcf, 'Position',  [100, 100, 800, 600])
+    set(gcf,'color','w');
+    set(gca,'Visible','off')
+    set(0,'DefaultAxesTitleFontWeight','normal');
+    dep_tscore_int_mat = [dep_tscore_pre(tscore_con_int == 1)' dep_tscore_post(tscore_con_int == 1)'];
+    dep_tscore_con_mat = [dep_tscore_pre(tscore_con_int == 0)' dep_tscore_post(tscore_con_int == 0)'];
+    
+    for j = 1:sum(tscore_con_int == 1)
+    
+        plot(dep_tscore_int_mat(j,:), 'r')
+        hold on 
+    
+    end 
+    for j = 1:sum(tscore_con_int == 0)
+    
+        plot(dep_tscore_con_mat(j,:), 'b')
+        hold on 
+    
+    end 
+    
+    box off 
+    xticks([1,2])
+    xticklabels({'pre','post'})
+    ylabel('Tscore')
+    title('Depression','FontSize',16)
+    
+    figure()
+    set(gcf, 'Position',  [100, 100, 800, 600])
+    set(gcf,'color','w');
+    set(gca,'Visible','off')
+    set(0,'DefaultAxesTitleFontWeight','normal');
+    gph_tscore_int_mat = [gph_tscore_pre(tscore_con_int == 1)' gph_tscore_post(tscore_con_int == 1)'];
+    gph_tscore_con_mat = [gph_tscore_pre(tscore_con_int == 0)' gph_tscore_post(tscore_con_int == 0)'];
+    
+    for j = 1:sum(tscore_con_int == 1)
+    
+        plot(gph_tscore_int_mat(j,:), 'r')
+        hold on 
+    
+    end 
+    for j = 1:sum(tscore_con_int == 0)
+    
+        plot(gph_tscore_con_mat(j,:), 'b')
+        hold on 
+    
+    end 
+    
+    box off 
+    xticks([1,2])
+    xticklabels({'pre','post'})
+    ylabel('Tscore')
+    title('Global physical health','FontSize',16)
+    
+    figure()
+    set(gcf, 'Position',  [100, 100, 800, 600])
+    set(gcf,'color','w');
+    set(gca,'Visible','off')
+    set(0,'DefaultAxesTitleFontWeight','normal');
+    gmh_tscore_int_mat = [gmh_tscore_pre(tscore_con_int == 1)' gmh_tscore_post(tscore_con_int == 1)'];
+    gmh_tscore_con_mat = [gmh_tscore_pre(tscore_con_int == 0)' gmh_tscore_post(tscore_con_int == 0)'];
+    
+    for j = 1:sum(tscore_con_int == 1)
+    
+        plot(gmh_tscore_int_mat(j,:), 'r')
+        hold on 
+    
+    end 
+    for j = 1:sum(tscore_con_int == 0)
+    
+        plot(gmh_tscore_con_mat(j,:), 'b')
+        hold on 
+    
+    end 
+    
+    box off 
+    xticks([1,2])
+    xticklabels({'pre','post'})
+    ylabel('Tscore')
+    title('Global mental health','FontSize',16)
+    
+    figure()
+    set(gcf, 'Position',  [100, 100, 800, 600])
+    set(gcf,'color','w');
+    set(gca,'Visible','off')
+    set(0,'DefaultAxesTitleFontWeight','normal');
+    pf_tscore_int_mat = [pf_tscore_pre(tscore_con_int == 1)' pf_tscore_post(tscore_con_int == 1)'];
+    pf_tscore_con_mat = [pf_tscore_pre(tscore_con_int == 0)' pf_tscore_post(tscore_con_int == 0)'];
+    
+    for j = 1:sum(tscore_con_int == 1)
+    
+        plot(pf_tscore_int_mat(j,:), 'r')
+        hold on 
+    
+    end 
+    for j = 1:sum(tscore_con_int == 0)
+    
+        plot(pf_tscore_con_mat(j,:), 'b')
+        hold on 
+    
+    end 
+    
+    box off 
+    xticks([1,2])
+    xticklabels({'pre','post'})
+    ylabel('Tscore')
+    title('Physical function','FontSize',16)
+    
+    figure()
+    set(gcf, 'Position',  [100, 100, 800, 600])
+    set(gcf,'color','w');
+    set(gca,'Visible','off')
+    set(0,'DefaultAxesTitleFontWeight','normal');
+    sd_tscore_int_mat = [sd_tscore_pre(tscore_con_int == 1)' sd_tscore_post(tscore_con_int == 1)'];
+    sd_tscore_con_mat = [sd_tscore_pre(tscore_con_int == 0)' sd_tscore_post(tscore_con_int == 0)'];
+    
+    for j = 1:sum(tscore_con_int == 1)
+    
+        plot(sd_tscore_int_mat(j,:), 'r')
+        hold on 
+    
+    end 
+    for j = 1:sum(tscore_con_int == 0)
+    
+        plot(sd_tscore_con_mat(j,:), 'b')
+        hold on 
+    
+    end 
+    
+    box off 
+    xticks([1,2])
+    xticklabels({'pre','post'})
+    ylabel('Tscore')
+    title('Sleep disturbance','FontSize',16)
 
 end 
-for j = 1:sum(tscore_con_int == 0)
-
-    plot(anx_tscore_con_mat(j,:), 'b')
-    hold on 
-
-end 
-
-box off 
-xticks([1,2])
-xticklabels({'pre','post'})
-ylabel('Tscore')
-title('Anxiety','FontSize',16)
-
-figure()
-set(gcf, 'Position',  [100, 100, 800, 600])
-set(gcf,'color','w');
-set(gca,'Visible','off')
-set(0,'DefaultAxesTitleFontWeight','normal');
-dep_tscore_int_mat = [dep_tscore_pre(tscore_con_int == 1)' dep_tscore_post(tscore_con_int == 1)'];
-dep_tscore_con_mat = [dep_tscore_pre(tscore_con_int == 0)' dep_tscore_post(tscore_con_int == 0)'];
-
-for j = 1:sum(tscore_con_int == 1)
-
-    plot(dep_tscore_int_mat(j,:), 'r')
-    hold on 
-
-end 
-for j = 1:sum(tscore_con_int == 0)
-
-    plot(dep_tscore_con_mat(j,:), 'b')
-    hold on 
-
-end 
-
-box off 
-xticks([1,2])
-xticklabels({'pre','post'})
-ylabel('Tscore')
-title('Depression','FontSize',16)
-
-figure()
-set(gcf, 'Position',  [100, 100, 800, 600])
-set(gcf,'color','w');
-set(gca,'Visible','off')
-set(0,'DefaultAxesTitleFontWeight','normal');
-gph_tscore_int_mat = [gph_tscore_pre(tscore_con_int == 1)' gph_tscore_post(tscore_con_int == 1)'];
-gph_tscore_con_mat = [gph_tscore_pre(tscore_con_int == 0)' gph_tscore_post(tscore_con_int == 0)'];
-
-for j = 1:sum(tscore_con_int == 1)
-
-    plot(gph_tscore_int_mat(j,:), 'r')
-    hold on 
-
-end 
-for j = 1:sum(tscore_con_int == 0)
-
-    plot(gph_tscore_con_mat(j,:), 'b')
-    hold on 
-
-end 
-
-box off 
-xticks([1,2])
-xticklabels({'pre','post'})
-ylabel('Tscore')
-title('Global physical health','FontSize',16)
-
-figure()
-set(gcf, 'Position',  [100, 100, 800, 600])
-set(gcf,'color','w');
-set(gca,'Visible','off')
-set(0,'DefaultAxesTitleFontWeight','normal');
-gmh_tscore_int_mat = [gmh_tscore_pre(tscore_con_int == 1)' gmh_tscore_post(tscore_con_int == 1)'];
-gmh_tscore_con_mat = [gmh_tscore_pre(tscore_con_int == 0)' gmh_tscore_post(tscore_con_int == 0)'];
-
-for j = 1:sum(tscore_con_int == 1)
-
-    plot(gmh_tscore_int_mat(j,:), 'r')
-    hold on 
-
-end 
-for j = 1:sum(tscore_con_int == 0)
-
-    plot(gmh_tscore_con_mat(j,:), 'b')
-    hold on 
-
-end 
-
-box off 
-xticks([1,2])
-xticklabels({'pre','post'})
-ylabel('Tscore')
-title('Global mental health','FontSize',16)
-
-figure()
-set(gcf, 'Position',  [100, 100, 800, 600])
-set(gcf,'color','w');
-set(gca,'Visible','off')
-set(0,'DefaultAxesTitleFontWeight','normal');
-pf_tscore_int_mat = [pf_tscore_pre(tscore_con_int == 1)' pf_tscore_post(tscore_con_int == 1)'];
-pf_tscore_con_mat = [pf_tscore_pre(tscore_con_int == 0)' pf_tscore_post(tscore_con_int == 0)'];
-
-for j = 1:sum(tscore_con_int == 1)
-
-    plot(pf_tscore_int_mat(j,:), 'r')
-    hold on 
-
-end 
-for j = 1:sum(tscore_con_int == 0)
-
-    plot(pf_tscore_con_mat(j,:), 'b')
-    hold on 
-
-end 
-
-box off 
-xticks([1,2])
-xticklabels({'pre','post'})
-ylabel('Tscore')
-title('Physical function','FontSize',16)
-
-figure()
-set(gcf, 'Position',  [100, 100, 800, 600])
-set(gcf,'color','w');
-set(gca,'Visible','off')
-set(0,'DefaultAxesTitleFontWeight','normal');
-sd_tscore_int_mat = [sd_tscore_pre(tscore_con_int == 1)' sd_tscore_post(tscore_con_int == 1)'];
-sd_tscore_con_mat = [sd_tscore_pre(tscore_con_int == 0)' sd_tscore_post(tscore_con_int == 0)'];
-
-for j = 1:sum(tscore_con_int == 1)
-
-    plot(sd_tscore_int_mat(j,:), 'r')
-    hold on 
-
-end 
-for j = 1:sum(tscore_con_int == 0)
-
-    plot(sd_tscore_con_mat(j,:), 'b')
-    hold on 
-
-end 
-
-box off 
-xticks([1,2])
-xticklabels({'pre','post'})
-ylabel('Tscore')
-title('Sleep disturbance','FontSize',16)
-
 % look at statistical significance, e.g., 
 %[h,p] = ttest2(anx_tscore_pre(tscore_con_int == 1),anx_tscore_pre(tscore_con_int == 0))
 % [h,p] = ttest(anx_tscore_pre(tscore_con_int == 1),anx_tscore_post(tscore_con_int == 1))
