@@ -3,7 +3,10 @@ close all;
 
 % load the data
 load('subject.mat');
+figure_display = 'off';
 
+% note: this file still has some old analyses, needs to be
+% cleaned
 %% look at intervention and control daily fatigue surveys, other results over time
 for j = 1:length(subject)
     
@@ -13,7 +16,7 @@ for j = 1:length(subject)
     
 end 
 
-
+% initialize HR, LCO, fatigue, and other params 
 mesors_c = nan(length(subject),max(len));
 amps_c = nan(length(subject),max(len));
 steps2hr_c = nan(length(subject),max(len));
@@ -37,7 +40,9 @@ lco_phase_i = nan(length(subject),max(len_lco));
 lco_amp_i = nan(length(subject),max(len_lco));
 
 for j = 1:length(subject)
+
     try
+
     inds = datenum(subject(j).hr_date) - datenum(subject(j).hr_date(1))+1;
     inds_fatigue = datenum(datetime(subject(j).daily_results_processed(:,1),'convertfrom','posixtime','timezone','local'))-datenum(datetime(subject(j).daily_results_processed(1,1),'convertfrom','posixtime','timezone','local'))+1;
     %inds_fatigue = 1:length(subject(j).daily_results_processed(:,1)); % alternate processing
@@ -70,7 +75,9 @@ for j = 1:length(subject)
         lco_amp_i(j,inds_lco) = subject(j).lco_amp;
         
     end 
+
     catch
+
     end 
 end 
 
@@ -152,34 +159,38 @@ for j = 1:num_weeks
 
 end 
 
-% generate daily fatigue figure 
-figure()
-set(gcf, 'Position',  [100, 100, 1000, 400])
-set(gcf,'color','w');
-set(gca,'Visible','off')
-subplot(2,2,[1,2])
-set(0,'DefaultAxesTitleFontWeight','normal');
-%plot([1:12]*7, nanmean(fatigue_c_byweek'),'b')
-%hold on 
-%plot([1:12]*7, nanmean(fatigue_i_byweek'),'r')
-%errorbar([1:12]*7,nanmean(fatigue_c_byweek'),nanstd(fatigue_c_byweek')/sqrt(84),'b')
-%errorbar([1:12]*7,nanmean(fatigue_i_byweek'),nanstd(fatigue_i_byweek')/sqrt(84),'r')
-plot(1:84, movmean(nanmean(fatigue_c),7),'b','Linewidth',2)
-hold on 
-plot(1:84, movmean(nanmean(fatigue_i),7),'r','Linewidth',2)
-legend('control','intervention')
-xlabel('days')
-ylabel('averaged daily fatigue score (0-3)')
-title('Daily fatigue over the study','FontSize',16)
-box off 
-%errorbar(movmean(nanmean(fatigue_c),7),movstd(nanmean(fatigue_c),7),'b')
-%errorbar(movmean(nanmean(fatigue_i),7),movstd(nanmean(fatigue_i),7),'r')
-subplot(2,2,3)
-bar([nanmean(fatigue_end_i(:)), nanmean(fatigue_end_c(:))],'k')
-ylabel('average end of trial fatigue')
-title('Average fatigue, last week')
-xticklabels({'int.','con.'})
-box off 
+if strcmp(figure_display,'on')
+
+    % generate daily fatigue figure 
+    figure()
+    set(gcf, 'Position',  [100, 100, 1000, 400])
+    set(gcf,'color','w');
+    set(gca,'Visible','off')
+    subplot(2,2,[1,2])
+    set(0,'DefaultAxesTitleFontWeight','normal');
+    %plot([1:12]*7, nanmean(fatigue_c_byweek'),'b')
+    %hold on 
+    %plot([1:12]*7, nanmean(fatigue_i_byweek'),'r')
+    %errorbar([1:12]*7,nanmean(fatigue_c_byweek'),nanstd(fatigue_c_byweek')/sqrt(84),'b')
+    %errorbar([1:12]*7,nanmean(fatigue_i_byweek'),nanstd(fatigue_i_byweek')/sqrt(84),'r')
+    plot(1:84, movmean(nanmean(fatigue_c),7),'b','Linewidth',2)
+    hold on 
+    plot(1:84, movmean(nanmean(fatigue_i),7),'r','Linewidth',2)
+    legend('control','intervention')
+    xlabel('days')
+    ylabel('averaged daily fatigue score (0-3)')
+    title('Daily fatigue over the study','FontSize',16)
+    box off 
+    %errorbar(movmean(nanmean(fatigue_c),7),movstd(nanmean(fatigue_c),7),'b')
+    %errorbar(movmean(nanmean(fatigue_i),7),movstd(nanmean(fatigue_i),7),'r')
+    subplot(2,2,3)
+    bar([nanmean(fatigue_end_i(:)), nanmean(fatigue_end_c(:))],'k')
+    ylabel('average end of trial fatigue')
+    title('Average fatigue, last week')
+    xticklabels({'int.','con.'})
+    box off 
+
+end 
 
 % good indices 
 good_indices_c = find(~isnan(fatigue_c(:,end)));
@@ -232,15 +243,19 @@ end
 [h_se_c_pop, p_se_c_pop] = ttest2(fatigue_start_c_pop(:), fatigue_end_c_pop(:));
 [h_se_i_pop, p_se_i_pop] = ttest2(fatigue_start_i_pop(:), fatigue_end_i_pop(:));
 
-subplot(2,2,4)
-bar_mat = [mean_start_i_pop(1) - mean_end_i_pop(1) mean_start_i_pop(2) - mean_end_i_pop(2) mean_start_i_pop(3) - mean_end_i_pop(3); mean_start_c_pop(1) - mean_end_c_pop(1) mean_start_c_pop(2) - mean_end_c_pop(2) mean_start_c_pop(3) - mean_end_c_pop(3)];
-bar(bar_mat)
-ylabel('average decrease in daily fatigue')
-%xticks([1.5, 3.5, 5.5])
-xticklabels({'intervention','control'})
-legend('BR','PR','AU')
-title('Intervention and control changes in fatigue, first vs last week')
-box off 
+if strcmp(figure_display,'on')
+
+    subplot(2,2,4)
+    bar_mat = [mean_start_i_pop(1) - mean_end_i_pop(1) mean_start_i_pop(2) - mean_end_i_pop(2) mean_start_i_pop(3) - mean_end_i_pop(3); mean_start_c_pop(1) - mean_end_c_pop(1) mean_start_c_pop(2) - mean_end_c_pop(2) mean_start_c_pop(3) - mean_end_c_pop(3)];
+    bar(bar_mat)
+    ylabel('average decrease in daily fatigue')
+    %xticks([1.5, 3.5, 5.5])
+    xticklabels({'intervention','control'})
+    legend('BR','PR','AU')
+    title('Intervention and control changes in fatigue, first vs last week')
+    box off 
+
+end 
 %% LCO stats
 cutoff = 7;
 lco_amp_start_c = lco_amp_c(:,1:cutoff);
@@ -283,66 +298,69 @@ sd_lco_phase_end_i = circularStandardDeviation(lco_phase_end_i(~isnan(lco_phase_
 [h_se_i_lco_phase, p_se_i_lco_phase] = ttest2(lco_phase_start_i(:), lco_phase_end_i(:));
 
 %% look at HR params
-figure()
-set(gcf, 'Position',  [100, 100, 800, 600])
-set(gcf,'color','w');
-set(gca,'Visible','off')
-set(0,'DefaultAxesTitleFontWeight','normal');
-subplot(3,2,1)
-plot(movmean(nanmean(mesors_c(:,nan_check_c >= 2)),7),'LineWidth',4)
-hold on 
-plot(movmean(nanmean(mesors_i(:,nan_check_i >= 2)),7),'LineWidth',4)
-legend('control','intervention')
-xlabel('day after beginning study')
-ylabel('parameter')
-title('Mesor','Fontsize',14)
-box off 
+if strcmp(figure_display,'on')
 
-subplot(3,2,2)
-plot(movmean(nanmean(amps_c(:,nan_check_c >= 2)),7),'LineWidth',4)
-hold on 
-plot(movmean(nanmean(amps_i(:,nan_check_i >= 2)),7),'LineWidth',4)
-xlabel('day after beginning study')
-ylabel('parameter')
-title('Amplitude','Fontsize',14)
-box off 
+    figure()
+    set(gcf, 'Position',  [100, 100, 800, 600])
+    set(gcf,'color','w');
+    set(gca,'Visible','off')
+    set(0,'DefaultAxesTitleFontWeight','normal');
+    subplot(3,2,1)
+    plot(movmean(nanmean(mesors_c(:,nan_check_c >= 2)),7),'LineWidth',4)
+    hold on 
+    plot(movmean(nanmean(mesors_i(:,nan_check_i >= 2)),7),'LineWidth',4)
+    legend('control','intervention')
+    xlabel('day after beginning study')
+    ylabel('parameter')
+    title('Mesor','Fontsize',14)
+    box off 
+    
+    subplot(3,2,2)
+    plot(movmean(nanmean(amps_c(:,nan_check_c >= 2)),7),'LineWidth',4)
+    hold on 
+    plot(movmean(nanmean(amps_i(:,nan_check_i >= 2)),7),'LineWidth',4)
+    xlabel('day after beginning study')
+    ylabel('parameter')
+    title('Amplitude','Fontsize',14)
+    box off 
+    
+    subplot(3,2,4)
+    plot(movmean(nanmean(steps2hr_c(:,nan_check_c >= 2)),7),'LineWidth',4)
+    hold on 
+    plot(movmean(nanmean(steps2hr_i(:,nan_check_i >= 2)),7),'LineWidth',4)
+    xlabel('day after beginning study')
+    ylabel('parameter')
+    title('Steps2hr','Fontsize',14)
+    box off 
+    
+    subplot(3,2,5)
+    plot(movmean(nanmean(noise_c(:,nan_check_c >= 2)),7),'LineWidth',4)
+    hold on 
+    plot(movmean(nanmean(noise_i(:,nan_check_i >= 2)),7),'LineWidth',4)
+    xlabel('day after beginning study')
+    ylabel('parameter')
+    title('Noise','Fontsize',14)
+    box off 
+    
+    subplot(3,2,6)
+    plot(movmean(nanmean(autocorrelation_c(:,nan_check_c >= 2)),7),'LineWidth',4)
+    hold on 
+    plot(movmean(nanmean(autocorrelation_i(:,nan_check_i >= 2)),7),'LineWidth',4)
+    xlabel('day after beginning study')
+    ylabel('parameter')
+    title('Autocorrelation','Fontsize',14)
+    box off 
+    
+    subplot(3,2,3)
+    plot(movmean(nanmean(uncertainty_c(:,nan_check_c >= 2)),7),'LineWidth',4)
+    hold on 
+    plot(movmean(nanmean(uncertainty_i(:,nan_check_i >= 2)),7),'LineWidth',4)
+    xlabel('day after beginning study')
+    ylabel('parameter')
+    title('Uncertainty','Fontsize',14)
+    box off 
 
-subplot(3,2,4)
-plot(movmean(nanmean(steps2hr_c(:,nan_check_c >= 2)),7),'LineWidth',4)
-hold on 
-plot(movmean(nanmean(steps2hr_i(:,nan_check_i >= 2)),7),'LineWidth',4)
-xlabel('day after beginning study')
-ylabel('parameter')
-title('Steps2hr','Fontsize',14)
-box off 
-
-subplot(3,2,5)
-plot(movmean(nanmean(noise_c(:,nan_check_c >= 2)),7),'LineWidth',4)
-hold on 
-plot(movmean(nanmean(noise_i(:,nan_check_i >= 2)),7),'LineWidth',4)
-xlabel('day after beginning study')
-ylabel('parameter')
-title('Noise','Fontsize',14)
-box off 
-
-subplot(3,2,6)
-plot(movmean(nanmean(autocorrelation_c(:,nan_check_c >= 2)),7),'LineWidth',4)
-hold on 
-plot(movmean(nanmean(autocorrelation_i(:,nan_check_i >= 2)),7),'LineWidth',4)
-xlabel('day after beginning study')
-ylabel('parameter')
-title('Autocorrelation','Fontsize',14)
-box off 
-
-subplot(3,2,3)
-plot(movmean(nanmean(uncertainty_c(:,nan_check_c >= 2)),7),'LineWidth',4)
-hold on 
-plot(movmean(nanmean(uncertainty_i(:,nan_check_i >= 2)),7),'LineWidth',4)
-xlabel('day after beginning study')
-ylabel('parameter')
-title('Uncertainty','Fontsize',14)
-box off 
-
+end 
 %% daily steps stats
 cutoff = 7;
 daily_steps_start_c = daily_steps_c(:,1:cutoff);
@@ -398,42 +416,46 @@ good_int_inds = find(int_nans_row == 2);
 pre_post_con_fatigue = pre_post_con_fatigue(good_con_inds,:);
 pre_post_int_fatigue = pre_post_int_fatigue(good_int_inds,:);
 
-figure()
-set(gcf, 'Position',  [100, 100, 1000, 400])
-set(gcf,'color','w');
-set(gca,'Visible','off')
-set(0,'DefaultAxesTitleFontWeight','normal');
-subplot(2,2,[1,2])
-y_fatigue = [mean(pre_post_int_fatigue(:,1)); mean(pre_post_con_fatigue(:,1));mean(pre_post_int_fatigue(:,2)); mean(pre_post_con_fatigue(:,2))];
-bar(y_fatigue, 'k')
-xlabel('group')
-xticklabels({'int., pre','con., pre','int., post', 'con., post'})
-ylabel('mean daily fatigue')
-title('Daily Fatigue Surveys','FontSize',16)
-box off
+if strcmp(figure_display,'on')
 
-subplot(2,2,3)
-%tscore_change_con_int = [control_tscore_start - control_tscore_end; int_tscore_start - int_tscore_end];
-scatter(1:length(pre_post_con_fatigue(:,1)), pre_post_con_fatigue(:,1) - pre_post_con_fatigue(:,2))
-hold on 
-scatter(length(pre_post_con_fatigue(:,1))+1:length(pre_post_con_fatigue(:,1))+length(pre_post_int_fatigue(:,1)), pre_post_int_fatigue(:,1) - pre_post_int_fatigue(:,2))
-legend('control','intervention')
-xlabel('individual')
-ylabel('pre - post')
-title('Change in Fatigue Score from Pre to Post')
-
-subplot(2,2,4)
-fatigue_change_con = pre_post_con_fatigue(:,1) - pre_post_con_fatigue(:,2);
-fatigue_change_int = pre_post_int_fatigue(:,1) - pre_post_int_fatigue(:,2);
-histogram(fatigue_change_con)
-hold on 
-histogram(fatigue_change_int)
-legend('control','intervention')
-%xticklabels({'increase or same fatigue','decrease of less than 2', 'decrease of at least 2'})
-xlabel('daily pre - post fatigue score')
-ylabel('count')
-title('Change in Fatigue')
-box off 
+    figure()
+    set(gcf, 'Position',  [100, 100, 1000, 400])
+    set(gcf,'color','w');
+    set(gca,'Visible','off')
+    set(0,'DefaultAxesTitleFontWeight','normal');
+    subplot(2,2,[1,2])
+    y_fatigue = [mean(pre_post_int_fatigue(:,1)); mean(pre_post_con_fatigue(:,1));mean(pre_post_int_fatigue(:,2)); mean(pre_post_con_fatigue(:,2))];
+    bar(y_fatigue, 'k')
+    xlabel('group')
+    xticklabels({'int., pre','con., pre','int., post', 'con., post'})
+    ylabel('mean daily fatigue')
+    title('Daily Fatigue Surveys','FontSize',16)
+    box off
+    
+    subplot(2,2,3)
+    %tscore_change_con_int = [control_tscore_start - control_tscore_end; int_tscore_start - int_tscore_end];
+    scatter(1:length(pre_post_con_fatigue(:,1)), pre_post_con_fatigue(:,1) - pre_post_con_fatigue(:,2))
+    hold on 
+    scatter(length(pre_post_con_fatigue(:,1))+1:length(pre_post_con_fatigue(:,1))+length(pre_post_int_fatigue(:,1)), pre_post_int_fatigue(:,1) - pre_post_int_fatigue(:,2))
+    legend('control','intervention')
+    xlabel('individual')
+    ylabel('pre - post')
+    title('Change in Fatigue Score from Pre to Post')
+    
+    subplot(2,2,4)
+    fatigue_change_con = pre_post_con_fatigue(:,1) - pre_post_con_fatigue(:,2);
+    fatigue_change_int = pre_post_int_fatigue(:,1) - pre_post_int_fatigue(:,2);
+    histogram(fatigue_change_con)
+    hold on 
+    histogram(fatigue_change_int)
+    legend('control','intervention')
+    %xticklabels({'increase or same fatigue','decrease of less than 2', 'decrease of at least 2'})
+    xlabel('daily pre - post fatigue score')
+    ylabel('count')
+    title('Change in Fatigue')
+    box off 
+    
+end 
 
 
 
