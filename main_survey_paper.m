@@ -27,5 +27,5 @@ tscore_results_analyze;
 % set up the data for gee analysis  
 gee_model_main;
 
-% aalyze imputed datasets
+% analyze imputed datasets
 imputed_dataset_analysis;
