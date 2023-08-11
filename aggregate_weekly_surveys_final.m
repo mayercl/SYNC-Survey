@@ -1,6 +1,7 @@
 clear; clc;
 close all;
 
+%% aggregate all the weekly survey files into a larger table
 save_data = 'off';
 filelist = dir('/Users/calebmayer/Dropbox (University of Michigan)/sync project/surveys_formatted_v2');
 n = 0;
@@ -20,7 +21,18 @@ for j = 1:length(filelist) - n
 
        count = count+1;
        weekly_data = readtable((['/Users/calebmayer/Dropbox (University of Michigan)/sync project/surveys_formatted_v2/' filelist(j+n).name]));
-       weekly_data_new = [table(repmat({filelist(j+n).name},height(weekly_data),1),'VariableNames',{'id'}) weekly_data];
+       
+       % add in id column, if needed 
+       if sum(strcmp(weekly_data.Properties.VariableNames,'id')) >= 1
+
+            weekly_data_new = weekly_data;
+
+       else 
+
+            weekly_data_new = [table(repmat({filelist(j+n).name},height(weekly_data),1),'VariableNames',{'id'}) weekly_data];
+
+       end 
+
        %if strcmp(class(table2array(weekly_data_new(:,"SleepAidUsage"))), 'double')
         for i  = 1:width(weekly_data_new)
 
@@ -32,6 +44,7 @@ for j = 1:length(filelist) - n
 
         end 
        %end 
+
        % format the weekly data for the individual
        weekly_data_new(:,"SleepAidUsage") =  table(table2cell(weekly_data_new(:,"SleepAidUsage")),'VariableNames',{'SleepAidUsage'});
        weekly_table_all = [weekly_table_all; weekly_data_new]; % aggregate weekly surveys
