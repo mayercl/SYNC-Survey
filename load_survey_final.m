@@ -23,10 +23,11 @@ weekly_empty = [];
 pre_empty = [];
 post_empty = [];
 
+% iterate through the individuals 
 for j = 1:length(names_all)
     
     disp(j)
-    subject_index = find(strcmp(names_all{j},subject_names_all));
+    subject_index = find(strcmp(names_all{j},subject_names_all)); % match the subject and data indices
 
     try 
 
@@ -66,7 +67,7 @@ for j = 1:length(names_all)
 
     catch 
 
-        weekly_empty = [weekly_empty; j]; % store indices where we don'thave results
+        weekly_empty = [weekly_empty; j]; % store indices where we don't have results
 
     end 
 
@@ -117,6 +118,6 @@ end
 % save the results 
 if strcmp(save_data,'on')
 
-    save('subject.mat','subject.mat');
+    save('subject','subject');
 
 end 
