@@ -2,7 +2,7 @@ clear; clc;
 close all;
 
 %% load directory and ids
-save_data = 'off';
+save_data = 'on'; % if we want to store the data or not 
 directory = '/Users/calebmayer/Dropbox (University of Michigan)/sync/TrialDataTools/surveys';
 patients_real = readtable('/Users/calebmayer/Dropbox (University of Michigan)/sync project/patients_real.csv','HeaderLines',0,'VariableNamingRule','preserve');
 patients_real = [table(patients_real.Properties.VariableNames(1),patients_real.Properties.VariableNames(2),'VariableNames',{patients_real.Properties.VariableNames{1},patients_real.Properties.VariableNames{2}}); patients_real];
@@ -18,12 +18,13 @@ count_pre = 0;
 count_post = 0;
 count_key = 0;
 count_catch = 0;
+count_check = 0;
 
 % iterate through the patients 
 for j = 1:length(names_all)
     
     disp(j)
-    clearvars -except j names_all directory count_daily count_weekly count_pre count_post count_key count_catch count_pre_j count_post_j save_data
+    clearvars -except j names_all directory count_daily count_weekly count_pre count_post count_key count_catch count_pre_j count_post_j save_data count_check
     daily_table = []; % initialize daily table for individual 
     weekly_table = [];
     count_post_j(j) = 0;
@@ -47,10 +48,12 @@ for j = 1:length(names_all)
         try
 
             survey_data{m}.time = posixtime(datetime(val.key(1:10),'timezone','local')); % should work with newer formatting 
+            survey_data{m}.time_name = str2num(convertCharsToStrings(subject_surveys(m).name(8:end-5)));
 
         catch 
 
             survey_data{m}.time = str2num(convertCharsToStrings(subject_surveys(m).name(8:end-5))); % if not, use survey name to get time 
+            survey_data{m}.time_name = str2num(convertCharsToStrings(subject_surveys(m).name(8:end-5)));
 
         end 
 
@@ -66,6 +69,7 @@ for j = 1:length(names_all)
                 
                 count_daily = count_daily + 1;
                 survey_data{m}.DailyFatigue_1Item = convertCharsToStrings(survey_data{m}.DailyFatigue_1Item);
+                survey_data{m}.key = val_keys(m);
                 daily_table = [daily_table; struct2table(survey_data{m})]; % add survey to daily table 
 
             elseif contains(val.key, 'weekly')
@@ -109,6 +113,20 @@ for j = 1:length(names_all)
                 if count_pre_j(j) == 1
 
                     count_pre = count_pre + 1;
+                    pre_table = struct2table(survey_data{m}); % take first submitted, as default
+                    ind_store = m;
+
+                elseif count_pre_j(j) > 1 & datetime(survey_data{ind_store}.time_name,'convertfrom','posixtime','timezone','local')  - datetime(survey_data{ind_store}.time,'convertfrom','posixtime','timezone','local') > 5% take second submitted, in special cases
+                    
+                    s1 = rmfield(survey_data{ind_store},{'time_name','time'});
+                    s2 = rmfield(survey_data{m},{'time_name','time'});
+                    disp(isequal(s1,s2))
+                    disp(datetime(survey_data{ind_store}.time_name,'convertfrom','posixtime','timezone','local'))
+                    disp(datetime(survey_data{m}.time_name,'convertfrom','posixtime','timezone','local'))
+                    disp(datetime(survey_data{ind_store}.time,'convertfrom','posixtime','timezone','local'))
+                    disp(datetime(survey_data{m}.time,'convertfrom','posixtime','timezone','local'))
+                    count_check = count_check + 1;
+                    ind_store = m; % store previous index of pre survey
                     pre_table = struct2table(survey_data{m});
 
                 end 
@@ -140,6 +158,7 @@ for j = 1:length(names_all)
                 
                 count_daily = count_daily + 1;
                 survey_data{m}.DailyFatigue_1Item = convertCharsToStrings(survey_data{m}.DailyFatigue_1Item);
+                survey_data{m}.key = "No key";
                 daily_table = [daily_table; struct2table(survey_data{m})];
 
             elseif len_answers(m) == 10 % weekly survey
