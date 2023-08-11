@@ -3,7 +3,7 @@ close all;
 
 % load the data 
 weekly_survey_data = readtable('/Users/calebmayer/Dropbox (University of Michigan)/sync project/surveys_formatted_v2/weekly_table_all.xls');
-figure_display = 'off';
+figure_display = 'on';
 
 %% format the data 
 load('subject.mat');
