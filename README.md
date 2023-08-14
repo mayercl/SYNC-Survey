@@ -9,11 +9,11 @@ Detailed descriptions of the individual files contained in this repository are b
 
 Formatting files:
 
-main_survey_paper:
+main_survey_paper: the main file that processes the data and generates the results. Does not perform every analysis (e.g., the GEE analyses in R are separate). 
 
-read_survey_final: 
+read_survey_final: reads in, formats, and saves the daily, weekly, and pre/post surveys. This file reads in the raw json files for each survey type and outputs xls files consisting of all the daily/weekly/pre/post surveys for each individual. 
 
-load_survey_final: 
+load_survey_final: this file assumes we have a previously constructed subject.mat (which can be initialized as subject = struct() and then save('subject')), and updates this file with the daily and weekly results. 
 
 process_survey_final: 
 
