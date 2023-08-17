@@ -7,7 +7,7 @@ close all;
 load('subject_pre_post');
 
 %% format the write the data in the correct format 
-save_data = 'off';
+save_data = 'on';
 subject_pre_all = [];
 subject_post_all = [];
 % format data in table 
@@ -66,7 +66,8 @@ subject_pre_all_num.Global09r = compute_score_p_f_g_vg_e(subject_pre_all_num.Glo
 subject_pre_all_num.Global06 = compute_score_naa_al_m_m_c(subject_pre_all_num.Global06,'off')';
 subject_pre_all_num.Global10r = compute_score_nrsoa(subject_pre_all_num.Global10r,'on')';
 subject_pre_all_num.Global08r = compute_score_n_m_m_s_vs(subject_pre_all_num.Global08r,'on')';
-subject_pre_all_num.Global07r = str2num(cell2mat(subject_pre_all_num.Global07r));
+subject_pre_all_num.Global07r = global07r_convert(str2num(cell2mat(subject_pre_all_num.Global07r)));
+
 
 subject_post_all_num.Global01 = compute_score_p_f_g_vg_e(subject_post_all_num.Global01,'off')';
 subject_post_all_num.Global02 = compute_score_p_f_g_vg_e(subject_post_all_num.Global02,'off')';
@@ -77,7 +78,8 @@ subject_post_all_num.Global09r = compute_score_p_f_g_vg_e(subject_post_all_num.G
 subject_post_all_num.Global06 = compute_score_naa_al_m_m_c(subject_post_all_num.Global06,'off')';
 subject_post_all_num.Global10r = compute_score_nrsoa(subject_post_all_num.Global10r,'on')';
 subject_post_all_num.Global08r = compute_score_n_m_m_s_vs(subject_post_all_num.Global08r,'on')';
-subject_post_all_num.Global07r = str2num(cell2mat(subject_post_all_num.Global07r));
+subject_post_all_num.Global07r = global07r_convert(str2num(cell2mat(subject_post_all_num.Global07r)));
+
 
 % sleep disturbance (short form 8b)
 subject_pre_all_num.Sleep108 = compute_score_naa_alb_s_qab_vm(subject_pre_all_num.Sleep108,'off')';
@@ -169,3 +171,20 @@ end
 
 % try dividing by survey?
 %survey_all_num_pf = [survey_all_num(:,"PIN") survey_all_num(:,"Assmnt") survey_all_num(:,"PFA11") survey_all_num(:,"PFA23") survey_all_num(:,"PFA4") survey_all_num(:,"PFA21") survey_all_num(:,"PFB1") survey_all_num(:,"PFA53") survey_all_num(:,"PFA53")]
+
+function global07r_output = global07r_convert(global07r_rawscores)
+
+global07r_output = nan(length(global07r_rawscores),1);
+global07r_output(global07r_rawscores == 0) = 5;
+global07r_output(global07r_rawscores == 1) = 4;
+global07r_output(global07r_rawscores == 2) = 4;
+global07r_output(global07r_rawscores == 3) = 4;
+global07r_output(global07r_rawscores == 4) = 3;
+global07r_output(global07r_rawscores == 5) = 3;
+global07r_output(global07r_rawscores == 6) = 3;
+global07r_output(global07r_rawscores == 7) = 2;
+global07r_output(global07r_rawscores == 8) = 2;
+global07r_output(global07r_rawscores == 9) = 2;
+global07r_output(global07r_rawscores == 10) = 1;
+
+end 

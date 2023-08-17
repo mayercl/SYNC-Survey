@@ -1,4 +1,4 @@
-function score = compute_score_nrsoa(score_string, reverse)
+function score_final = compute_score_nrsoa(score_string, reverse)
 
 for j = 1:length(score_string)
 
@@ -28,9 +28,14 @@ end
 
 if strcmp(reverse,'on')
     
-    score(score == 1) = 5;
-    score(score == 2) = 4;
-    score(score == 4) = 2;
-    score(score == 5) = 1;
+    score_final(score == 1) = 5;
+    score_final(score == 2) = 4;
+    score_final(score == 3) = 3;
+    score_final(score == 4) = 2;
+    score_final(score == 5) = 1;
+
+else 
+
+    score_final = score;
 
 end 
